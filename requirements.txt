@@ -1,0 +1,30 @@
+# 基础依赖
+opencv-python>=4.5.0
+numpy>=1.19.0
+
+# PyTorch 相关
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==2.1.2+cu118
+torchvision==0.16.2+cu118
+pytorch3d==0.7.5
+
+# YOLO-Pose 相关
+yolov7-pose
+Pillow>=7.1.2
+PyYAML>=5.3.1
+requests>=2.23.0
+scipy>=1.4.1
+tqdm>=4.41.0
+matplotlib>=3.2.2
+seaborn>=0.11.0
+
+# HybrIK 相关
+hybrik
+smplx>=0.1.28
+pyrender>=0.1.45
+trimesh>=3.9.1
+chumpy>=0.70
+transforms3d>=0.3.1
+
+# 可选依赖（用于可视化）
+open3d>=0.13.0
