@@ -1,21 +1,31 @@
 import numpy as np
 from pose_analysis import PoseAnalyzer
 
-def create_test_frame():
+def create_test_frame(raw_data_text):
     """创建测试帧数据"""
-    return {
-        '左髋': {'x': 0.1805, 'y': 0.6718, 'z': -0.0258, 'v': 0.9980},
-        '右髋': {'x': 0.1630, 'y': 0.6705, 'z': 0.0258, 'v': 0.9972},
-        '左膝': {'x': 0.1827, 'y': 0.7459, 'z': -0.0067, 'v': 0.9830},
-        '右膝': {'x': 0.1673, 'y': 0.7423, 'z': 0.0732, 'v': 0.6769},
-        '左踝': {'x': 0.1820, 'y': 0.8047, 'z': 0.0610, 'v': 0.9329},
-        '右踝': {'x': 0.1758, 'y': 0.7889, 'z': 0.1779, 'v': 0.8309},
-    }
+    frame_data = {}
+    lines = raw_data_text.strip().split('\n')
+    
+    for line in lines:
+        try:
+            key, values = line.split(': ')
+            # 分离 x,y,z,v 值
+            coords = {}
+            for item in values.split(', '):
+                coord, value = item.split('=')
+                coords[coord] = float(value)
+            frame_data[key] = coords
+        except Exception as e:
+            print(f"解析行失败: {line}")
+            print(f"错误信息: {str(e)}")
+            continue
+            
+    return frame_data
 
-def analyze_frame():
+def analyze_frame(raw_data_text):
     """分析测试帧"""
     analyzer = PoseAnalyzer()
-    frame_data = create_test_frame()
+    frame_data = create_test_frame(raw_data_text)
     
     print("1. 检查双脚高度差:")
     feet_height_diff = abs(frame_data['左踝']['y'] - frame_data['右踝']['y'])
@@ -49,11 +59,15 @@ def analyze_frame():
     print("\n5. 弓步判断结果:")
     is_gong_bu = analyzer.is_gong_bu_frame(frame_data)
     print(f"   是否判定为弓步: {is_gong_bu}")
-    
-    if is_gong_bu:
-        print("\n6. 弓步得分:")
-        score = analyzer.score_gong_bu(frame_data)
-        print(f"   总分: {score:.2f}")
+
+# 使用示例
+raw_data = """左髋: x=0.5744, y=0.6820, z=-0.0472, v=0.9996
+右髋: x=0.5597, y=0.6847, z=0.0471, v=0.9997
+左膝: x=0.5741, y=0.7538, z=-0.0674, v=0.9972
+右膝: x=0.5474, y=0.7421, z=0.0643, v=0.9850
+左踝: x=0.6138, y=0.7726, z=0.0035, v=0.9976
+右踝: x=0.5604, y=0.8015, z=0.1314, v=0.9919
+"""
 
 if __name__ == "__main__":
-    analyze_frame()
+    analyze_frame(raw_data)

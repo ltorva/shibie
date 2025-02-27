@@ -70,4 +70,4 @@ def compare_frame_data(frame_number):
                 print(f"{key} {coord}: {val1:.4f} vs {val2:.4f}, 差值: {abs(val1-val2):.4f}")
 
 if __name__ == "__main__":
-    compare_frame_data(30)
+    compare_frame_data(471)
