@@ -98,65 +98,65 @@ class PoseDetector:
                 print("视频读取完成或出错")
                 break
 
-            # 图像预处理
-            # 1. 调整大小以提高处理速度
-            frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+            # 保存原始帧
+            original_frame = frame.copy()
             
-            # 2. 图像增强
-            frame = cv2.convertScaleAbs(frame, alpha=1.2, beta=10)  # 增加亮度和对比度
-            
-            # 3. 降噪
-            frame = cv2.GaussianBlur(frame, (3, 3), 0)
-            
-            # 4. 色彩空间转换
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # 预处理用于显示和检测的帧
+            processed_frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+            processed_frame = cv2.convertScaleAbs(processed_frame, alpha=1.2, beta=10)
+            processed_frame = cv2.GaussianBlur(processed_frame, (3, 3), 0)
+            frame_rgb = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2RGB)
             
             # 处理图像
             results = self.pose.process(frame_rgb)
 
-            # 在图像上绘制姿态标记
             if results.pose_landmarks:
+                # 在处理后的帧上绘制姿态标记
                 self.mp_draw.draw_landmarks(
-                    frame,
+                    processed_frame,
                     results.pose_landmarks,
                     self.mp_pose.POSE_CONNECTIONS,
                     landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style()
                 )
                 
-                # 添加文字信息
+                # 添加帧号信息
                 frame_info = f'Frame: {frame_count}'
-                cv2.putText(frame, frame_info, (10, 30), 
+                cv2.putText(processed_frame, frame_info, (10, 30), 
                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 
-                # 保存坐标数据
+                # 保存坐标数据 - 使用原始尺寸
                 coordinates = []
                 for landmark in results.pose_landmarks.landmark:
+                    # 还原到原始尺寸
+                    x = landmark.x / 0.8  # 还原缩放
+                    y = landmark.y / 0.8
                     coordinates.append({
-                        'x': landmark.x,
-                        'y': landmark.y,
+                        'x': x,
+                        'y': y,
                         'z': landmark.z,
                         'visibility': landmark.visibility
                     })
                 
-                # 创建新的输出文件夹
+                # 创建输出文件夹
                 if not os.path.exists(output_dir):
                     os.makedirs(output_dir)
                     
-                # 保存到文件
+                # 只保存一次坐标数据，使用原始尺寸
                 filename = os.path.join(output_dir, f'frame_{frame_count}.txt')
                 with open(filename, 'w', encoding='utf-8') as f:
                     for i, coord in enumerate(coordinates):
                         body_part = self.BODY_PARTS.get(i, f"未知点{i}")
                         f.write(f"{body_part}: x={coord['x']:.4f}, y={coord['y']:.4f}, z={coord['z']:.4f}, v={coord['visibility']:.4f}\n")
 
-            # 保存处理后的帧
-            out.write(frame)
-            
-            # 显示结果
-            cv2.imshow('Pose Detection', frame)
-            frame_count += 1  # 递增帧计数器
+                # 保存处理后的帧用于视频输出
+                resized_processed = cv2.resize(processed_frame, (frame_width, frame_height))
+                out.write(resized_processed)
+                
+                # 显示处理后的帧
+                cv2.imshow('Pose Detection', processed_frame)
+                
+            frame_count += 1
 
-            # 按'q'键退出
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -193,8 +193,12 @@ class PoseDetector:
                 break
 
             if frame_count in frame_numbers:
-                # 处理图像
+                # 添加与 process_video 相同的预处理步骤
+                frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+                frame = cv2.convertScaleAbs(frame, alpha=1.2, beta=10)
+                frame = cv2.GaussianBlur(frame, (3, 3), 0)
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                
                 results = self.pose.process(frame_rgb)
 
                 if results.pose_landmarks:
@@ -252,16 +256,17 @@ def main():
     
     # 指定要导出的帧号
     frame_numbers = [
-        124,
+                125,
     190,
     255,
-    280,
+    282,
     356,
+    382,
     455,
-    471,
-    502,
+    472,
+    503,
     598,
-    643,
+    641,
     666,
     691
   ]
