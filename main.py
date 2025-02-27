@@ -26,7 +26,7 @@ def main():
     analyzer = PoseAnalyzer()
     
     # 加载整个序列的数据
-    frame_sequence = load_sequence_data('output')
+    frame_sequence = load_sequence_data('output1')
     
     # 分析序列
     result = analyzer.analyze_sequence(frame_sequence)

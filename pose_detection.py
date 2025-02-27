@@ -27,10 +27,15 @@ class PoseDetector:
     
     def __init__(self):
         self.mp_pose = mp.solutions.pose
-        self.pose = self.mp_pose.Pose(static_image_mode=False,
-                                     model_complexity=1,
-                                     min_detection_confidence=0.5,
-                                     min_tracking_confidence=0.5)
+        self.pose = self.mp_pose.Pose(
+            static_image_mode=False,     # 动态视频模式
+            model_complexity=1,          # 提高模型复杂度 (0-2)
+            smooth_landmarks=True,       # 启用平滑
+            enable_segmentation=True,    # 启用分割以提高准确性
+            smooth_segmentation=True,    # 平滑分割
+            min_detection_confidence=0.6, # 提高检测置信度
+            min_tracking_confidence=0.6   # 提高追踪置信度
+        )
         self.mp_draw = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
 
@@ -77,13 +82,33 @@ class PoseDetector:
         # 获取新的输出文件夹路径
         output_dir = self.get_next_output_folder(os.path.dirname(video_path))
         
+        # 获取视频基本信息
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        
+        # 创建视频写入器保存处理后的视频
+        output_video_path = os.path.join(output_dir, 'processed_video.mp4')
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
+        
         while cap.isOpened():
             success, frame = cap.read()
             if not success:
                 print("视频读取完成或出错")
                 break
 
-            # 将BGR图像转换为RGB图像
+            # 图像预处理
+            # 1. 调整大小以提高处理速度
+            frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+            
+            # 2. 图像增强
+            frame = cv2.convertScaleAbs(frame, alpha=1.2, beta=10)  # 增加亮度和对比度
+            
+            # 3. 降噪
+            frame = cv2.GaussianBlur(frame, (3, 3), 0)
+            
+            # 4. 色彩空间转换
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
             # 处理图像
@@ -97,6 +122,11 @@ class PoseDetector:
                     self.mp_pose.POSE_CONNECTIONS,
                     landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style()
                 )
+                
+                # 添加文字信息
+                frame_info = f'Frame: {frame_count}'
+                cv2.putText(frame, frame_info, (10, 30), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 
                 # 保存坐标数据
                 coordinates = []
@@ -119,6 +149,9 @@ class PoseDetector:
                         body_part = self.BODY_PARTS.get(i, f"未知点{i}")
                         f.write(f"{body_part}: x={coord['x']:.4f}, y={coord['y']:.4f}, z={coord['z']:.4f}, v={coord['visibility']:.4f}\n")
 
+            # 保存处理后的帧
+            out.write(frame)
+            
             # 显示结果
             cv2.imshow('Pose Detection', frame)
             frame_count += 1  # 递增帧计数器
@@ -128,6 +161,7 @@ class PoseDetector:
                 break
 
         cap.release()
+        out.release()
         cv2.destroyAllWindows()
         print(f"坐标数据已保存到文件夹: {output_dir}")
 
@@ -159,24 +193,77 @@ class PoseDetector:
                 break
 
             if frame_count in frame_numbers:
-                # 保存图片
-                output_path = os.path.join(output_dir, f'frame_{frame_count}.jpg')
-                cv2.imwrite(output_path, frame)
-                print(f"已保存第 {frame_count} 帧到: {output_path}")
+                # 处理图像
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                results = self.pose.process(frame_rgb)
+
+                if results.pose_landmarks:
+                    # 绘制骨骼点和连接线
+                    self.mp_draw.draw_landmarks(
+                        frame,
+                        results.pose_landmarks,
+                        self.mp_pose.POSE_CONNECTIONS,
+                        landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style()
+                    )
+                    
+                    # 添加帧号和姿态信息
+                    frame_info = f'Frame: {frame_count}'
+                    cv2.putText(frame, frame_info, (10, 30), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    
+                    # 保存坐标数据用于姿态分析
+                    coordinates = []
+                    for landmark in results.pose_landmarks.landmark:
+                        coordinates.append({
+                            'x': landmark.x,
+                            'y': landmark.y,
+                            'z': landmark.z,
+                            'visibility': landmark.visibility
+                        })
+                    
+                    # 保存带有骨骼点的图片
+                    output_path = os.path.join(output_dir, f'frame_{frame_count}.jpg')
+                    cv2.imwrite(output_path, frame)
+                    
+                    # 保存姿态数据
+                    data_path = os.path.join(output_dir, f'frame_{frame_count}_data.txt')
+                    with open(data_path, 'w', encoding='utf-8') as f:
+                        for i, coord in enumerate(coordinates):
+                            body_part = self.BODY_PARTS.get(i, f"未知点{i}")
+                            f.write(f"{body_part}: x={coord['x']:.4f}, y={coord['y']:.4f}, z={coord['z']:.4f}, v={coord['visibility']:.4f}\n")
+                    
+                    print(f"已保存第 {frame_count} 帧及其数据")
 
             frame_count += 1
 
         cap.release()
-        print(f"所有指定帧的图片已保存到文件夹: {output_dir}")
+        print(f"所有帧和数据已保存到: {output_dir}")
 
 def main():
     detector = PoseDetector()
+
+    video_path = '1.mp4'  # 确保视频文件在正确的路径
+    # 检查文件是否存在
+    if not os.path.exists(video_path):
+        print(f"Error: 视频文件不存在: {video_path}")
+        return
+    # 调用实例方法而不是类方法
+    #detector.process_video(video_path)
+    
     # 指定要导出的帧号
     frame_numbers = [
-                195,
-    399,
-    607,
-    662
+                       30,
+    103,
+    175,
+    203,
+    287,
+    397,
+    415,
+    450,
+    555,
+    606,
+    631,
+    659
   ]
     detector.export_frames('1.mp4', frame_numbers)
 

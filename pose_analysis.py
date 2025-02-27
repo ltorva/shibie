@@ -77,18 +77,18 @@ class PoseAnalyzer:
         left_knee_angle = self.calculate_angle(left_hip, left_knee, left_ankle)
         right_knee_angle = self.calculate_angle(right_hip, right_knee, right_ankle)
         
-        # 弓步特征判断（以左腿前为例）
+        # 当前的严格判断条件
         is_left_forward = (
-            abs(left_knee_angle - self.standards['front_knee_angle']) < 30 and  # 前腿弯曲
-            abs(right_knee_angle - self.standards['back_knee_angle']) < 30 and  # 后腿伸直
-            right_leg_z_diff < 0.07  # 后腿在同一平面上
+            abs(left_knee_angle - self.standards['front_knee_angle']) < 35 and  # 前腿弯曲
+            abs(right_knee_angle - self.standards['back_knee_angle']) < 35 and  # 后腿伸直
+            right_leg_z_diff < 0.1  # 后腿在同一平面上
         )
         
         # 右腿前的情况
         is_right_forward = (
-            abs(right_knee_angle - self.standards['front_knee_angle']) < 30 and
-            abs(left_knee_angle - self.standards['back_knee_angle']) < 30 and
-            left_leg_z_diff < 0.07  # 后腿在同一平面
+            abs(right_knee_angle - self.standards['front_knee_angle']) < 35 and
+            abs(left_knee_angle - self.standards['back_knee_angle']) < 35 and
+            left_leg_z_diff < 0.1  # 后腿在同一平面
         )
         
         # 添加辅助判断：检查髋部高度差
