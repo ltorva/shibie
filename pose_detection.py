@@ -294,13 +294,13 @@ def main():
     
     # 指定要导出的帧号
     frame_numbers = [
-                           151,
+                               153,
     216,
-    311,
+    313,
     411,
-    479,
-    572,
-    721,
+    481,
+    578,
+    722,
     844
   ]
     detector.export_frames('1.mp4', frame_numbers)

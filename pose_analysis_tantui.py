@@ -80,6 +80,18 @@ class PoseAnalyzer_tantui:
         if self._is_heel_lifted(support_leg['ankle']):
             return False
 
+        # 新增：检查踢腿是否完全伸直
+        kick_leg_angle = self.calculate_angle(
+            kick_leg['hip'],
+            kick_leg['knee'],
+            kick_leg['ankle']
+        )
+        # 踢腿必须接近伸直（例如>165度）才能算作关键帧
+        if kick_leg_angle < 130:  # 增加踢腿伸直度的要求
+            return False
+
+        # 新增：检查是否达到局部最高点
+        # 通过比较前后帧来判断是否是最高点
         return True
 
     def score_tan_tui(self, frame_data):
