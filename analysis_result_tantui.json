@@ -1,0 +1,120 @@
+{
+  "key_frames": [
+    151,
+    216,
+    311,
+    411,
+    479,
+    572,
+    721,
+    844
+  ],
+  "scores": [
+    {
+      "frame_index": 151,
+      "score": 38.378794275611924,
+      "support_leg": "left"
+    },
+    {
+      "frame_index": 216,
+      "score": 42.637568603616955,
+      "support_leg": "left"
+    },
+    {
+      "frame_index": 311,
+      "score": 40.62441940663136,
+      "support_leg": "left"
+    },
+    {
+      "frame_index": 411,
+      "score": 41.631149948529576,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 479,
+      "score": 40.61202219261469,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 572,
+      "score": 38.796172225185266,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 721,
+      "score": 38.47743053965111,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 844,
+      "score": 41.77907502784537,
+      "support_leg": "right"
+    }
+  ],
+  "details": [
+    {
+      "frame_index": 151,
+      "support_leg_angle": 171.90757293112904,
+      "kick_leg_angle": 147.5716528940797,
+      "kick_height_ratio": 0.09320000000000006,
+      "is_heel_lifted": false,
+      "support_leg": "left"
+    },
+    {
+      "frame_index": 216,
+      "support_leg_angle": 161.68653066337922,
+      "kick_leg_angle": 160.3594644257564,
+      "kick_height_ratio": 0.11119999999999997,
+      "is_heel_lifted": false,
+      "support_leg": "left"
+    },
+    {
+      "frame_index": 311,
+      "support_leg_angle": 168.45847230438525,
+      "kick_leg_angle": 146.93704253324069,
+      "kick_height_ratio": 0.11619999999999997,
+      "is_heel_lifted": false,
+      "support_leg": "left"
+    },
+    {
+      "frame_index": 411,
+      "support_leg_angle": 165.51021326996877,
+      "kick_leg_angle": 131.14183119078058,
+      "kick_height_ratio": 0.08979999999999999,
+      "is_heel_lifted": false,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 479,
+      "support_leg_angle": 163.963283900045,
+      "kick_leg_angle": 119.26086177469699,
+      "kick_height_ratio": 0.08389999999999997,
+      "is_heel_lifted": false,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 572,
+      "support_leg_angle": 161.08280834323844,
+      "kick_leg_angle": 95.73147081213146,
+      "kick_height_ratio": 0.027899999999999925,
+      "is_heel_lifted": false,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 721,
+      "support_leg_angle": 169.37821680105748,
+      "kick_leg_angle": 145.73565615969133,
+      "kick_height_ratio": 0.08040000000000003,
+      "is_heel_lifted": false,
+      "support_leg": "right"
+    },
+    {
+      "frame_index": 844,
+      "support_leg_angle": 166.78970990476708,
+      "kick_leg_angle": 166.22028986297886,
+      "kick_height_ratio": 0.12339999999999995,
+      "is_heel_lifted": false,
+      "support_leg": "right"
+    }
+  ]
+}

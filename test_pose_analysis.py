@@ -1,5 +1,5 @@
 import numpy as np
-from pose_analysis import PoseAnalyzer
+from pose_analysis_gongbu import PoseAnalyzer
 
 def create_test_frame(raw_data_text):
     """创建测试帧数据"""
@@ -61,12 +61,12 @@ def analyze_frame(raw_data_text):
     print(f"   是否判定为弓步: {is_gong_bu}")
 
 # 使用示例
-raw_data = """左髋: x=0.5724, y=0.6862, z=-0.0435, v=0.9978
-右髋: x=0.5594, y=0.6880, z=0.0435, v=0.9980
-左膝: x=0.5765, y=0.7547, z=-0.0039, v=0.9081
-右膝: x=0.5478, y=0.7401, z=0.0736, v=0.9848
-左踝: x=0.6119, y=0.7741, z=0.0847, v=0.9525
-右踝: x=0.5604, y=0.8048, z=0.1261, v=0.9899
+raw_data = """左髋: x=0.7110, y=0.8464, z=-0.0463, v=0.9992
+右髋: x=0.7014, y=0.8454, z=0.0463, v=0.9991
+左膝: x=0.6974, y=0.9303, z=-0.0522, v=0.9431
+右膝: x=0.6858, y=0.9175, z=0.0602, v=0.9650
+左踝: x=0.7460, y=0.9598, z=0.0008, v=0.9663
+右踝: x=0.6994, y=1.0024, z=0.0919, v=0.9824
 """
 
 if __name__ == "__main__":

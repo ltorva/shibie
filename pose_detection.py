@@ -3,7 +3,23 @@ import mediapipe as mp
 import numpy as np
 import os
 import glob
+"""
+mediapipe
+用途：3d人体姿态估计
+提供 33 个人体关键点检测
+支持实时视频处理
+提供平滑和分割功能
+    'x': x,      # x坐标（水平方向）
+    'y': y,      # y坐标（垂直方向）
+    'z': landmark.z,    # z坐标（深度信息）
+    'visibility': landmark.visibility  # 可见度
 
+opencv
+视频读取和处理
+图像预处理（缩放、亮度调整、模糊）
+可视化（关键点绘制、文字标注）
+图像和视频保存
+"""
 class PoseDetector:
     # 定义身体部位映射
     BODY_PARTS = {
@@ -106,7 +122,11 @@ class PoseDetector:
             processed_frame = cv2.convertScaleAbs(processed_frame, alpha=1.2, beta=10)
             processed_frame = cv2.GaussianBlur(processed_frame, (3, 3), 0)
             frame_rgb = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2RGB)
-            
+            #图像缩放 减少计算量，加快处理速度
+            #亮度和对比度调整 提高图像清晰度，便于检测关键点
+            #高斯模糊降噪 减少图像噪声
+            #颜色空间转换 将BGR格式转换为RGB格式 MediaPipe需要RGB格式的输入
+
             # 处理图像
             results = self.pose.process(frame_rgb)
 
@@ -164,7 +184,10 @@ class PoseDetector:
         out.release()
         cv2.destroyAllWindows()
         print(f"坐标数据已保存到文件夹: {output_dir}")
-
+    # 视频读取和预处理
+    # 姿态检测
+    # 关键点绘制
+    # 数据保存
     def export_frames(self, video_path, frame_numbers):
         # 检查文件是否存在
         if not os.path.exists(video_path):
@@ -187,22 +210,50 @@ class PoseDetector:
             os.makedirs(output_dir)
 
         frame_count = 0
+        processed_frames = []  # 记录已处理的帧
+        
         while cap.isOpened():
             success, frame = cap.read()
             if not success:
+                print(f"视频读取结束，共处理 {frame_count} 帧")
+                print(f"已处理的目标帧: {processed_frames}")
+                print(f"未处理的目标帧: {[f for f in frame_numbers if f not in processed_frames]}")
                 break
 
             if frame_count in frame_numbers:
-                # 添加与 process_video 相同的预处理步骤
-                frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
-                frame = cv2.convertScaleAbs(frame, alpha=1.2, beta=10)
-                frame = cv2.GaussianBlur(frame, (3, 3), 0)
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                print(f"\n正在处理第 {frame_count} 帧:")
+                
+                # 保存原始帧图片
+                output_path = os.path.join(output_dir, f'frame_{frame_count}.jpg')
+                cv2.imwrite(output_path, frame)
+                print(f"已保存原始图片: {output_path}")
+                
+                # 预处理并尝试检测姿态
+                processed_frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+                processed_frame = cv2.convertScaleAbs(processed_frame, alpha=1.2, beta=10)
+                processed_frame = cv2.GaussianBlur(processed_frame, (3, 3), 0)
+                frame_rgb = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2RGB)
                 
                 results = self.pose.process(frame_rgb)
-
+                
+                # 保存姿态数据文件（无论是否检测到关键点）
+                data_path = os.path.join(output_dir, f'frame_{frame_count}_data.txt')
+                with open(data_path, 'w', encoding='utf-8') as f:
+                    if results.pose_landmarks:
+                        # 有关键点时保存坐标数据
+                        for i, landmark in enumerate(results.pose_landmarks.landmark):
+                            body_part = self.BODY_PARTS.get(i, f"未知点{i}")
+                            x = landmark.x / 0.8  # 还原缩放
+                            y = landmark.y / 0.8
+                            f.write(f"{body_part}: x={x:.4f}, y={y:.4f}, z={landmark.z:.4f}, v={landmark.visibility:.4f}\n")
+                        print(f"已保存姿态数据: {data_path}")
+                    else:
+                        # 无关键点时记录空数据
+                        f.write("未检测到姿态关键点\n")
+                        print(f"警告: 第 {frame_count} 帧未检测到姿态关键点")
+                
+                # 在图片上绘制关键点（如果有）
                 if results.pose_landmarks:
-                    # 绘制骨骼点和连接线
                     self.mp_draw.draw_landmarks(
                         frame,
                         results.pose_landmarks,
@@ -210,39 +261,26 @@ class PoseDetector:
                         landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style()
                     )
                     
-                    # 添加帧号和姿态信息
-                    frame_info = f'Frame: {frame_count}'
-                    cv2.putText(frame, frame_info, (10, 30), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    
-                    # 保存坐标数据用于姿态分析
-                    coordinates = []
-                    for landmark in results.pose_landmarks.landmark:
-                        coordinates.append({
-                            'x': landmark.x,
-                            'y': landmark.y,
-                            'z': landmark.z,
-                            'visibility': landmark.visibility
-                        })
-                    
-                    # 保存带有骨骼点的图片
-                    output_path = os.path.join(output_dir, f'frame_{frame_count}.jpg')
-                    cv2.imwrite(output_path, frame)
-                    
-                    # 保存姿态数据
-                    data_path = os.path.join(output_dir, f'frame_{frame_count}_data.txt')
-                    with open(data_path, 'w', encoding='utf-8') as f:
-                        for i, coord in enumerate(coordinates):
-                            body_part = self.BODY_PARTS.get(i, f"未知点{i}")
-                            f.write(f"{body_part}: x={coord['x']:.4f}, y={coord['y']:.4f}, z={coord['z']:.4f}, v={coord['visibility']:.4f}\n")
-                    
-                    print(f"已保存第 {frame_count} 帧及其数据")
+                    # 保存带标记的图片
+                    marked_path = os.path.join(output_dir, f'frame_{frame_count}_marked.jpg')
+                    cv2.imwrite(marked_path, frame)
+                    print(f"已保存标记图片: {marked_path}")
+                
+                processed_frames.append(frame_count)
+                print(f"第 {frame_count} 帧处理完成")
 
             frame_count += 1
 
         cap.release()
-        print(f"所有帧和数据已保存到: {output_dir}")
-
+        print("\n=== 处理总结 ===")
+        print(f"视频总帧数: {frame_count}")
+        print(f"目标处理帧数: {len(frame_numbers)}")
+        print(f"实际处理帧数: {len(processed_frames)}")
+        print(f"未能处理的帧: {[f for f in frame_numbers if f not in processed_frames]}")
+    # 指定帧提取
+    # 姿态数据保存
+    # 可视化结果输出
+    
 def main():
     detector = PoseDetector()
 
@@ -256,21 +294,16 @@ def main():
     
     # 指定要导出的帧号
     frame_numbers = [
-                125,
-    190,
-    255,
-    282,
-    356,
-    382,
-    455,
-    472,
-    503,
-    598,
-    641,
-    666,
-    691
+                           151,
+    216,
+    311,
+    411,
+    479,
+    572,
+    721,
+    844
   ]
     detector.export_frames('1.mp4', frame_numbers)
-
+#132 195 257 267 286 353 364 385 461 507 552 603 641 648 666 675 705 764 790 821 
 if __name__ == "__main__":
     main()

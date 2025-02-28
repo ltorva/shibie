@@ -1,4 +1,5 @@
-from pose_analysis import PoseAnalyzer
+from pose_analysis_gongbu import PoseAnalyzer_gongbu
+from pose_analysis_tantui import PoseAnalyzer_tantui
 import os
 import json
 
@@ -33,7 +34,7 @@ def load_sequence_data(output_folder):
     frame_files.sort(key=lambda x: x[0])
     print(f"\n找到 {len(frame_files)} 个帧文件")
 
-    
+
     
     # 处理每个帧文件
     for frame_num, frame_file in frame_files:
@@ -72,29 +73,22 @@ def load_sequence_data(output_folder):
 def main():
     try:
         # 创建分析器实例
-        analyzer = PoseAnalyzer()
-        
+        #analyzer = PoseAnalyzer_gongbu()
+        analyzer = PoseAnalyzer_tantui()
         # 使用绝对路径加载数据
         output_folder = os.path.join(os.getcwd(), 'output1')
         frame_sequence = load_sequence_data(output_folder)
         
         if frame_sequence:
-            print("\n验证第30帧数据:")
-            if len(frame_sequence) > 30:
-                frame_30 = frame_sequence[30]
-                for key in sorted(frame_30.keys()):
-                    value = frame_30[key]
-                    print(f"{key}: x={value['x']:.4f}, y={value['y']:.4f}, z={value['z']:.4f}, v={value['v']:.4f}")
-            
             # 分析序列
             result = analyzer.analyze_sequence(frame_sequence)
             
-            print(f"\n找到 {len(result['key_frames'])} 个关键帧:")
+            #print(f"\n找到 {len(result['key_frames'])} 个关键帧:")
             for score_info in result['scores']:
                 print(f"帧 {score_info['frame_index']}: 得分 {score_info['score']:.2f}")
                 
             # 保存结果
-            with open('analysis_result.json', 'w', encoding='utf-8') as f:
+            with open('analysis_result_tantui.json', 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
                 
     except Exception as e:
