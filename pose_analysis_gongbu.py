@@ -47,7 +47,7 @@ class PoseAnalyzer_gongbu:
         left_hip = frame_data.get('左髋')
         right_hip = frame_data.get('右髋')
         left_knee = frame_data.get('左膝')
-        right_knee = frame_data.get('右膝')
+        right_knee = frame_data.get('右膝') 
         left_ankle = frame_data.get('左踝')
         right_ankle = frame_data.get('右踝')
         
@@ -126,8 +126,7 @@ class PoseAnalyzer_gongbu:
             frame_data['右髋']['v'],
             frame_data['左膝']['v'],
             frame_data['右膝']['v'],
-            frame_data['左踝']['v'],
-            frame_data['右踝']['v']
+            frame_data['左踝']['v'],                                                                                  
         ]
         scores['stability'] = sum(key_points_visibility) / len(key_points_visibility) * 100
         

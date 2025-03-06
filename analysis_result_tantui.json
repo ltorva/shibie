@@ -13,42 +13,50 @@
     {
       "frame_index": 153,
       "score": 39.681741959176954,
-      "support_leg": "left"
+      "support_leg": "left",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 216,
       "score": 42.637568603616955,
-      "support_leg": "left"
+      "support_leg": "left",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 313,
       "score": 41.47330001816047,
-      "support_leg": "left"
+      "support_leg": "left",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 411,
       "score": 41.631149948529576,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 481,
       "score": 41.475265528601255,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 578,
       "score": 41.51582202733879,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 722,
       "score": 39.19071160252033,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 844,
       "score": 41.77907502784537,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     }
   ],
   "details": [
@@ -58,7 +66,8 @@
       "kick_leg_angle": 141.23731053218086,
       "kick_height_ratio": 0.12409999999999999,
       "is_heel_lifted": false,
-      "support_leg": "left"
+      "support_leg": "left",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 216,
@@ -66,7 +75,8 @@
       "kick_leg_angle": 160.3594644257564,
       "kick_height_ratio": 0.11119999999999997,
       "is_heel_lifted": false,
-      "support_leg": "left"
+      "support_leg": "left",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 313,
@@ -74,7 +84,8 @@
       "kick_leg_angle": 164.2915506401778,
       "kick_height_ratio": 0.1401,
       "is_heel_lifted": false,
-      "support_leg": "left"
+      "support_leg": "left",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 411,
@@ -82,7 +93,8 @@
       "kick_leg_angle": 131.14183119078058,
       "kick_height_ratio": 0.08979999999999999,
       "is_heel_lifted": false,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 481,
@@ -90,7 +102,8 @@
       "kick_leg_angle": 170.18254047884264,
       "kick_height_ratio": 0.13790000000000002,
       "is_heel_lifted": false,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 578,
@@ -98,7 +111,8 @@
       "kick_leg_angle": 164.68592204895083,
       "kick_height_ratio": 0.14790000000000003,
       "is_heel_lifted": false,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 722,
@@ -106,7 +120,8 @@
       "kick_leg_angle": 168.58573755911505,
       "kick_height_ratio": 0.1049,
       "is_heel_lifted": false,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     },
     {
       "frame_index": 844,
@@ -114,7 +129,8 @@
       "kick_leg_angle": 166.22028986297886,
       "kick_height_ratio": 0.12339999999999995,
       "is_heel_lifted": false,
-      "support_leg": "right"
+      "support_leg": "right",
+      "motion_type": "tantui"
     }
   ]
 }

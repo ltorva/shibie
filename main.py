@@ -1,5 +1,6 @@
 from pose_analysis_gongbu import PoseAnalyzer_gongbu
 from pose_analysis_tantui import PoseAnalyzer_tantui
+from score_tantuidengtui import TanTuiDengTuiScorer
 import os
 import json
 
@@ -75,6 +76,7 @@ def main():
         # 创建分析器实例
         #analyzer = PoseAnalyzer_gongbu()
         analyzer = PoseAnalyzer_tantui()
+        score_analyzer = TanTuiDengTuiScorer()
         # 使用绝对路径加载数据
         output_folder = os.path.join(os.getcwd(), 'output1')
         frame_sequence = load_sequence_data(output_folder)
@@ -90,6 +92,16 @@ def main():
             # 保存结果
             with open('analysis_result_tantui.json', 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
+
+            score_result = score_analyzer.score_sequence(result, frame_sequence)
+            print(f"总分: {score_result['score']:.1f}")
+            print("\n规格扣分:")
+            for spec in score_result['deductions']['specs']:
+                print(f"- 第{spec['frame']}帧: {spec['message']}")
+    
+            print("\n动作错误:")
+            for error in score_result['deductions']['errors']:
+                print(f"- 第{error['frame']}帧: {error['message']}")            
                 
     except Exception as e:
         print(f"程序执行出错: {str(e)}")

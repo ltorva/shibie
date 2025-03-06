@@ -188,12 +188,7 @@ class PoseAnalyzer_tantui:
 
 
     def analyze_sequence(self, frame_sequence):
-
-        """
-        分析整个弹腿动作序列
-        frame_sequence: 包含连续帧数据的列表
-        返回关键帧信息和得分
-        """
+        """分析整个弹腿动作序列"""
         key_frames = self.detect_key_frames(frame_sequence)
         analysis_result_tantui = {
             'key_frames': key_frames,
@@ -230,11 +225,14 @@ class PoseAnalyzer_tantui:
                     'ankle': frame_data['左踝']
                 }
 
+            motion_type = 'tantui'
+            
             # 添加得分信息
             analysis_result_tantui['scores'].append({
                 'frame_index': frame_idx,
                 'score': score,
-                'support_leg': 'left' if is_left_support else 'right'
+                'support_leg': 'left' if is_left_support else 'right',
+                'motion_type': motion_type
             })
             
             # 添加详细分析信息
@@ -252,7 +250,8 @@ class PoseAnalyzer_tantui:
                 ),
                 'kick_height_ratio': self._calculate_kick_height_ratio(frame_data),
                 'is_heel_lifted': self._is_heel_lifted(support_leg['ankle']),
-                'support_leg': 'left' if is_left_support else 'right'
+                'support_leg': 'left' if is_left_support else 'right',
+                'motion_type': motion_type
             })
             
         return analysis_result_tantui
